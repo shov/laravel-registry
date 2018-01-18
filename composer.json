@@ -1,0 +1,30 @@
+{
+  "name": "shov/laravel-registry",
+  "description": "The implementation of Registry pattern for Laravel",
+  "keywords": [
+    "laravel-registry",
+    "registry",
+    "laravel",
+    "settings",
+    "configuration",
+    "php"
+  ],
+  "type": "library",
+  "require": {
+    "php": ">=7.1",
+    "illuminate/support": "~5.4"
+  },
+  "license": "BSD-2-Clause",
+  "authors": [
+    {
+      "name": "Alexandr Shevchenko",
+      "email": "ls.shov@gmail.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "autoload": {
+    "psr-4": {
+      "Shov\\Registry\\": "src/Registry"
+    }
+  }
+}

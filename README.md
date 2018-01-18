@@ -11,7 +11,7 @@ The goal of this project is implement this interface:
 |+has(string $key): bool                      |
 |                                             |
 |+get(string $key, $default = null): mixed    |
-|+all(array $defaults): array                 |
+|+all(array $defaults = []): array            |
 |                                             |
 |+set(string $key, $value): static            |
 |+values(array $pairs): static                |
@@ -19,8 +19,9 @@ The goal of this project is implement this interface:
 |+forget(string $key): static                 |
 |+flush(bool force): static                   |
 |                                             |
-|+lock(?string ...$keys): static              |
+|+lock(string ...$keys): static               |
 |+lockAll(): static                           |
+|+getLockedKeys(): array                      |
 |                                             |
 |+stopPersist(): static                       |
 `---------------------------------------------'
