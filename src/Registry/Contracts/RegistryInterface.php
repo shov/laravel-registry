@@ -51,6 +51,16 @@ interface RegistryInterface
     public function values(array $pairs): RegistryInterface;
 
     /**
+     * Make the immutable pair, it don't persist never
+     * and will removed after the script terminated
+     * @param string $key
+     * @param $value
+     * @return RegistryInterface
+     * @throws LockedException
+     */
+    public function immutable(string $key, $value): RegistryInterface;
+
+    /**
      * Remove the pair by key
      * @param string $key
      * @return RegistryInterface
@@ -59,36 +69,17 @@ interface RegistryInterface
 
     /**
      * Remove all pairs besides the locked which
-     * If $force set true, the locked pairs will removed as well
+     * If $force set true, the immutable pairs will removed as well
      * @param bool $force
      * @return RegistryInterface
      */
     public function flush(bool $force = false): RegistryInterface;
 
     /**
-     * Mark the pair as the locked by key
-     * You can put several keys or ...$arrayOfKeys or even nothing.
-     *
-     * In case you had call just lock() the method will be trying to lock keys by chain:
-     * @example $registry->set('foo', 'bar')->lock(); //foo is locked
-     * @example $registry->values(['foo' => 'bar', 'baz' => 42])->lock(); //foo and baz are locked
-     *
-     * @param string[] ...$keys
-     * @return RegistryInterface
-     */
-    public function lock(string ...$keys): RegistryInterface;
-
-    /**
-     * Lock all already set pairs
-     * @return RegistryInterface
-     */
-    public function lockAll(): RegistryInterface;
-
-    /**
-     * Fetch all locked pairs' keys
+     * Fetch list of keys of immutable pairs
      * @return array
      */
-    public function getLockedKeys(): array;
+    public function getImmutableKeys(): array;
 
     /**
      * Turning off of persisting. After calling this method

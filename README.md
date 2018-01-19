@@ -16,13 +16,13 @@ The goal of this project is implement this interface:
 |+set(string $key, $value): static            |
 |+values(array $pairs): static                |
 |                                             |
+|+immutable(string $key, $value): static      |
+|                                             |
 |+forget(string $key): static                 |
 |+flush(bool force): static                   |
 |                                             |
-|+lock(string ...$keys): static               |
-|+lockAll(): static                           |
-|+getLockedKeys(): array                      |
-|                                             |
+|+getImmutableKeys(): array                   |
+|                                             |                                             |
 |+stopPersist(): static                       |
 `---------------------------------------------'
 ```
@@ -42,7 +42,7 @@ So let's going to interfaces:
 |SaverInterface       |
 |---------------------|
 |---------------------|
-|+save(array $values) |
+|+save(array $pairs)  |
 `---------------------'
 
 ,---------------------.
@@ -56,3 +56,50 @@ Then it should be great to publish the config which set the implementations
 we will use when run
 
 For a while I'll put the tasks to the Issues tab
+
+#### Locking
+Well now I explain my point about locking.
+
+```text
+,---------------------------------------------.
+|RegistryInterface                            |
+|---------------------------------------------|
+|---------------------------------------------|
+|                                             |
+|+lock(string ...$keys): static               |
+|+lockAll(): static                           |
+|+getLockedKeys(): array                      |
+|                                             |
+`---------------------------------------------'
+```
+
+First, the locking isn't persisting, that means the pairs which you have to lock,
+should be locked every time script run in code. 
+Before you'll lock it the values can be changed.
+
+Consequently as well as you desired make the pair locked 
+you've got no method to unlock while script going on. 
+
+However the important thing is keeping in you mind 
+the regular Registry has a global storage 
+and any other process can change the value of the locked pair. 
+
+Global instances are dangerous. Actually I have to make think about it bit more.
+May be there is the reason to persist locked pairs 
+or otherwise don't persist them never
+
+The case I put locking to another instance:
+```text
+,---------------------------------.
+|LockerInterface                  |
+|---------------------------------|
+|---------------------------------|
+|+lock(string ...$keys): array    |
+|+unlock(string ...$keys): static |
+|                                 |
+|+isLocked(string $key): bool     |
+|+getLockedKeys(): array          |
+`---------------------------------'
+```
+
+Just now I put locking to the backlog for a while.
