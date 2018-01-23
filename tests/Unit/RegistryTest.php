@@ -17,14 +17,10 @@ class RegistryTest extends TestCase
     public function has()
     {
         //Arrange
-        [
-            'registry' => $registry,
-            'storage' => $storage,
-
-        ] = $this->mocking();
-        /** @var Registry $registry */
-
+        $storage = $this->mockStorage();
         $storage->pairs['foo'] = 'apple';
+
+        $registry = $this->mockRegistry($storage, $storage);
 
         //Act
         $hasFoo = $registry->has('foo');
@@ -41,11 +37,12 @@ class RegistryTest extends TestCase
     public function hasEmpty()
     {
         //Arrange
-        ['registry' => $registry] = $this->mocking();
-        /** @var Registry $registry */
+        $storage = $this->mockStorage();
+
+        $registry = $this->mockRegistry($storage, $storage);
 
         //Expect
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
 
         //Act
         $registry->has('');
@@ -57,14 +54,10 @@ class RegistryTest extends TestCase
     public function get()
     {
         //Arrange
-        [
-            'registry' => $registry,
-            'storage' => $storage,
-
-        ] = $this->mocking();
-        /** @var Registry $registry */
-
+        $storage = $this->mockStorage();
         $storage->pairs['foo'] = 'apple';
+
+        $registry = $this->mockRegistry($storage, $storage);
 
         //Act
         $fooVal = $registry->get('foo');
@@ -83,16 +76,12 @@ class RegistryTest extends TestCase
     public function all()
     {
         //Arrange
-        [
-            'registry' => $registry,
-            'storage' => $storage,
-
-        ] = $this->mocking();
-        /** @var Registry $registry */
-
+        $storage = $this->mockStorage();
         $storage->pairs['foo'] = 'apple';
         $storage->pairs['bar'] = 'pear';
         $storage->pairs['baz'] = 'pineapple';
+
+        $registry = $this->mockRegistry($storage, $storage);
 
         $expectedFull = $storage->pairs;
 
@@ -105,6 +94,46 @@ class RegistryTest extends TestCase
 
         //Clean storage
         $storage->pairs = [];
+        $registry = $this->mockRegistry($storage, $storage);
+
+        $pairsFromEmpty = $registry->all();
+        $pairsFromEmptyDefaults = $registry->all($defaultKit);
+
+        //Assert
+        $this->assertEquals($expectedFull, $pairs);
+        $this->assertEquals($expectedFull, $pairsFromDefaults);
+
+        $this->assertEquals([], $pairsFromEmpty);
+        $this->assertEquals($expectedDefault, $pairsFromEmptyDefaults);
+    }
+
+    /**
+     * @test
+     */
+    public function immutableAndAll()
+    {
+        //Arrange
+        $storage = $this->mockStorage();
+        $storage->pairs['foo'] = 'apple';
+        $storage->pairs['bar'] = 'pear';
+        $storage->pairs['baz'] = 'pineapple';
+
+        $registry = $this->mockRegistry($storage, $storage);
+
+        $registry->setImmutablePairs(['zex' => 'apple']);
+
+        $expectedFull = array_merge($storage->pairs, $registry->getImmutablePairs());
+
+        $defaultKit = ['bar' => 'banana',];
+        $expectedDefault = $defaultKit;
+
+        //Act
+        $pairs = $registry->all();
+        $pairsFromDefaults = $registry->all($defaultKit);
+
+        //Clean storagef
+        $storage->pairs = [];
+        $registry = $this->mockRegistry($storage, $storage);
 
         $pairsFromEmpty = $registry->all();
         $pairsFromEmptyDefaults = $registry->all($defaultKit);
@@ -124,12 +153,8 @@ class RegistryTest extends TestCase
     public function set()
     {
         //Arrange
-        [
-            'registry' => $registry,
-            'storage' => $storage,
-
-        ] = $this->mocking();
-        /** @var Registry $registry */
+        $storage = $this->mockStorage();
+        $registry = $this->mockRegistry($storage, $storage);
 
         $storage->pairs['foo'] = 'apple';
 
@@ -149,7 +174,7 @@ class RegistryTest extends TestCase
         $this->assertEquals($expectPairs, $storage->pairs);
 
         //Expect
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
 
         //Act
         $registry->set('', 'some-val');
@@ -162,12 +187,8 @@ class RegistryTest extends TestCase
     public function immutable()
     {
         //Arrange
-        [
-            'registry' => $registry,
-            'storage' => $storage,
-
-        ] = $this->mocking();
-        /** @var Registry $registry */
+        $storage = $this->mockStorage();
+        $registry = $this->mockRegistry($storage, $storage);
 
         $storage->pairs['foo'] = 'apple';
 
@@ -184,11 +205,11 @@ class RegistryTest extends TestCase
             ->immutable('foo', 'pineapple');
 
         //Assert
-        $this->assertEquals($expectPairs, $registry->immutablePairs);
+        $this->assertEquals($expectPairs, $registry->getImmutablePairs());
         $this->assertEquals(['foo' => 'apple'], $storage->pairs);
 
         //Expect
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
 
         //Act
         $registry->immutable('', 'some-val');
@@ -201,12 +222,8 @@ class RegistryTest extends TestCase
     public function immutableAndSet()
     {
         //Arrange
-        [
-            'registry' => $registry,
-            'storage' => $storage,
-
-        ] = $this->mocking();
-        /** @var Registry $registry */
+        $storage = $this->mockStorage();
+        $registry = $this->mockRegistry($storage, $storage);
 
         //Expect
         $this->expectException(LockedException::class);
@@ -224,12 +241,8 @@ class RegistryTest extends TestCase
     public function immutableAndValues()
     {
         //Arrange
-        [
-            'registry' => $registry,
-            'storage' => $storage,
-
-        ] = $this->mocking();
-        /** @var Registry $registry */
+        $storage = $this->mockStorage();
+        $registry = $this->mockRegistry($storage, $storage);
 
         //Expect
         $this->expectException(LockedException::class);
@@ -247,18 +260,14 @@ class RegistryTest extends TestCase
     public function values()
     {
         //Arrange
-        [
-            'registry' => $registry,
-            'storage' => $storage,
-
-        ] = $this->mocking();
-        /** @var Registry $registry */
-
+        $storage = $this->mockStorage();
         $storage->pairs = [
             'bar' => 'banana',
             'baz' => 42,
             'foo' => 'pineapple',
         ];
+
+        $registry = $this->mockRegistry($storage, $storage);
 
         $newPairs = [
             'qux' => 11.0,
@@ -277,7 +286,7 @@ class RegistryTest extends TestCase
         $this->assertEquals($expectPairs, $storage->pairs);
 
         //Expect
-        $this->expectException(\Throwable::class);
+        $this->expectException(\TypeError::class);
 
         //Act
         $registry->values([
@@ -291,12 +300,8 @@ class RegistryTest extends TestCase
     public function forget()
     {
         //Arrange
-        [
-            'registry' => $registry,
-            'storage' => $storage,
-
-        ] = $this->mocking();
-        /** @var Registry $registry */
+        $storage = $this->mockStorage();
+        $registry = $this->mockRegistry($storage, $storage);
 
         $storage->pairs['foo'] = 'apple';
 
@@ -307,7 +312,7 @@ class RegistryTest extends TestCase
         $this->assertFalse(isset($storage->pairs['foo']));
 
         //Expect
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
 
         //Act
         $registry->forget('');
@@ -319,12 +324,8 @@ class RegistryTest extends TestCase
     public function forgetAndImmutable()
     {
         //Arrange
-        [
-            'registry' => $registry,
-            'storage' => $storage,
-
-        ] = $this->mocking();
-        /** @var Registry $registry */
+        $storage = $this->mockStorage();
+        $registry = $this->mockRegistry($storage, $storage);
 
         //Expect
         $this->expectException(LockedException::class);
@@ -341,12 +342,8 @@ class RegistryTest extends TestCase
     public function flush()
     {
         //Arrange
-        [
-            'registry' => $registry,
-            'storage' => $storage,
-
-        ] = $this->mocking();
-        /** @var Registry $registry */
+        $storage = $this->mockStorage();
+        $registry = $this->mockRegistry($storage, $storage);
 
         $storage->pairs = ['foo' => 'apple', 'bar' => 'orange'];
 
@@ -363,22 +360,18 @@ class RegistryTest extends TestCase
     public function flushAndImmutable()
     {
         //Arrange
-        [
-            'registry' => $registry,
-            'storage' => $storage,
-
-        ] = $this->mocking();
-        /** @var Registry $registry */
+        $storage = $this->mockStorage();
+        $registry = $this->mockRegistry($storage, $storage);
 
         $storage->pairs = ['baz' => 'banana'];
-        $registry->immutablePairs = ['foo' => 'apple'];
+        $registry->setImmutablePairs(['foo' => 'apple']);
 
         //Act
         $registry->flush();
 
         //Assert
         $this->assertEmpty($storage->pairs);
-        $this->assertEquals(['foo' => 'apple'], $registry->immutablePairs);
+        $this->assertEquals(['foo' => 'apple'], $registry->getImmutablePairs());
     }
 
     /**
@@ -387,22 +380,18 @@ class RegistryTest extends TestCase
     public function flushForceAndImmutable()
     {
         //Arrange
-        [
-            'registry' => $registry,
-            'storage' => $storage,
-
-        ] = $this->mocking();
-        /** @var Registry $registry */
+        $storage = $this->mockStorage();
+        $registry = $this->mockRegistry($storage, $storage);
 
         $storage->pairs = ['baz' => 'banana'];
-        $registry->immutablePairs = ['foo' => 'apple'];
+        $registry->setImmutablePairs(['foo' => 'apple']);
 
         //Act
         $registry->flush(true);
 
         //Assert
         $this->assertEmpty($storage->pairs);
-        $this->assertEmpty($registry->immutablePairs);
+        $this->assertEmpty($registry->getImmutablePairs());
     }
 
     /**
@@ -411,26 +400,22 @@ class RegistryTest extends TestCase
     public function getImmutableKeys()
     {
         //Arrange
-        [
-            'registry' => $registry,
-            'storage' => $storage,
-
-        ] = $this->mocking();
-        /** @var Registry $registry */
+        $storage = $this->mockStorage();
+        $registry = $this->mockRegistry($storage, $storage);
 
         $storage->pairs = ['baz' => 'banana'];
-        $registry->immutablePairs = ['foo' => 'apple', 'bar' => 'orange'];
+        $registry->setImmutablePairs(['foo' => 'apple', 'bar' => 'orange']);
 
         //Act
         $immutableKeys = $registry->getImmutableKeys();
 
         //Assert
-        $this->assertEquals(array_keys($registry->immutablePairs), $immutableKeys);
+        $this->assertEquals(array_keys($registry->getImmutablePairs()), $immutableKeys);
     }
 
-    protected function mocking()
+    protected function mockStorage()
     {
-        $storage = new class () implements SaverInterface, LoaderInterface
+        return new class () implements SaverInterface, LoaderInterface
         {
             public $pairs = [];
 
@@ -444,11 +429,21 @@ class RegistryTest extends TestCase
                 return $this->pairs;
             }
         };
+    }
 
-        $registry = new class($storage, $storage) extends Registry {
-            public $immutablePairs;
+    protected function mockRegistry(LoaderInterface $loader, SaverInterface $saver)
+    {
+        return new class($loader, $saver) extends Registry
+        {
+            public function getImmutablePairs():array
+            {
+                return $this->immutablePairs;
+            }
+
+            public function setImmutablePairs(array $immutablePairs)
+            {
+                $this->immutablePairs = $immutablePairs;
+            }
         };
-
-        return (compact('storage', 'registry'));
     }
 }
