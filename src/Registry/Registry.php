@@ -6,17 +6,27 @@ use Shov\Registry\Contracts\LoaderInterface;
 use Shov\Registry\Contracts\RegistryInterface;
 use Shov\Registry\Contracts\SaverInterface;
 use Shov\Registry\Exceptions\LockedException;
+use Shov\Registry\Helpers\PairManagerSupportTrait;
+use Shov\Registry\Storage\FakeSaver;
 
 /**
  * The Registry
  */
 class Registry implements RegistryInterface
 {
+    use PairManagerSupportTrait;
+
     /** @var LoaderInterface */
     protected $loader;
 
     /** @var SaverInterface */
     protected $saver;
+
+    /** @var array The state */
+    protected $pairs = [];
+
+    /** @var array Immutable slice */
+    protected $immutablePairs = [];
 
     /**
      * DI
@@ -27,6 +37,8 @@ class Registry implements RegistryInterface
     {
         $this->loader = $loader;
         $this->saver = $saver;
+
+        $this->loadState();
     }
 
     /**
@@ -34,7 +46,8 @@ class Registry implements RegistryInterface
      */
     public function has(string $key): bool
     {
-        // TODO: Implement has() method.
+        $this->breakIfEmpty($key);
+        return isset($this->immutablePairs[$key]) || isset($this->pairs[$key]);
     }
 
     /**
@@ -42,7 +55,15 @@ class Registry implements RegistryInterface
      */
     public function get(string $key, $default = null)
     {
-        // TODO: Implement get() method.
+        if (isset($this->immutablePairs[$key])) {
+            return $this->immutablePairs[$key];
+        }
+
+        if (isset($this->pairs[$key])) {
+            return $this->pairs[$key];
+        }
+
+        return $default;
     }
 
     /**
@@ -50,7 +71,13 @@ class Registry implements RegistryInterface
      */
     public function all(array $defaults = []): array
     {
-        // TODO: Implement all() method.
+        $all = array_merge($this->pairs, $this->immutablePairs);
+
+        if (!empty($all)) {
+            return $all;
+        }
+
+        return $defaults;
     }
 
     /**
@@ -58,7 +85,13 @@ class Registry implements RegistryInterface
      */
     public function set(string $key, $value): RegistryInterface
     {
-        // TODO: Implement set() method.
+        $this->breakIfEmpty($key);
+        $this->breakIfLocked($key);
+
+        $this->pairs[$key] = $value;
+        $this->saveState();
+
+        return $this;
     }
 
     /**
@@ -66,7 +99,19 @@ class Registry implements RegistryInterface
      */
     public function values(array $pairs): RegistryInterface
     {
-        // TODO: Implement values() method.
+        $validator = function (string $key, $value) {
+            $this->breakIfEmpty($key);
+            $this->breakIfLocked($key);
+        };
+
+        foreach ($pairs as $key => $value) {
+            $validator($key, $value);
+        }
+
+        $this->pairs = array_merge($this->pairs, $pairs);
+        $this->saveState();
+
+        return $this;
     }
 
     /**
@@ -74,7 +119,12 @@ class Registry implements RegistryInterface
      */
     public function immutable(string $key, $value): RegistryInterface
     {
-        // TODO: Implement immutable() method.
+        $this->breakIfEmpty($key);
+        $this->breakIfLocked($key);
+
+        $this->immutablePairs[$key] = $value;
+
+        return $this;
     }
 
     /**
@@ -82,7 +132,13 @@ class Registry implements RegistryInterface
      */
     public function forget(string $key): RegistryInterface
     {
-        // TODO: Implement forget() method.
+        $this->breakIfEmpty($key);
+        $this->breakIfLocked($key);
+
+        unset($this->pairs[$key]);
+        $this->saveState();
+
+        return $this;
     }
 
     /**
@@ -90,7 +146,15 @@ class Registry implements RegistryInterface
      */
     public function flush(bool $force = false): RegistryInterface
     {
-        // TODO: Implement flush() method.
+        $this->pairs = [];
+
+        if($force) {
+            $this->immutablePairs = [];
+        }
+
+        $this->saveState();
+
+        return $this;
     }
 
     /**
@@ -98,7 +162,7 @@ class Registry implements RegistryInterface
      */
     public function getImmutableKeys(): array
     {
-        // TODO: Implement getImmutableKeys() method.
+        return array_keys($this->immutablePairs);
     }
 
     /**
@@ -106,6 +170,8 @@ class Registry implements RegistryInterface
      */
     public function stopPersist(): RegistryInterface
     {
-        // TODO: Implement stopPersist() method.
+        $this->saver = new FakeSaver();
+
+        return $this;
     }
 }
