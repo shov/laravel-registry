@@ -5,6 +5,43 @@
 [![license](https://img.shields.io/github/license/shov/laravel-registry.svg)]()
 
 
+## Usage
+
+```php
+$this->registry
+    ->set('foo', 'x')
+    ->values(['bar' => 'y']);
+    
+$xy = $this->registry->get('foo') 
+      . $this->registry->get('bar');
+      
+assert('xy' === $xy);
+
+$empty = $this->registry
+            ->set('some', 'value')
+            ->set('foo', 'bar')
+            ->immutable('answer', 42)
+            ->flush(true)
+            ->all();
+            
+assert(empty($empty));
+```
+
+### Methods
+
+ Method | Description |
+---|---|
+has(string $key): bool| Checks does the Registry has value for given key (including the immutable). |
+get(string $key, $default = null): mixed | Tries to get value by given key, in a case there is no value for given key will be returned default value.|
+all(array $defaults = []): array | Fetches all stored values (as key-value pairs array). Returns default array if no values. Includes immutable. |
+set(string $key, $value): static | Tries to set/rewrite value by key. Be careful if key refers to immutable you will got an exception.|
+values(array $pairs): static | Tries to set/rewrite values by key and do it with key-value pairs array. Be careful if one given of keys refers to immutable you will got an exception. |
+immutable(string $key, $value): static | Tries to set immutable value for given key. Be careful if key already refers to immutable you will got an exception. Important thing is this condition: if you make immutable with key the same of existing the regular one, you can't to get the regular value because getting immutable values has the priority, but you still possible to reset regular value with this key using set() |
+forget(string $key): static | Removes regular key-value pair. Be careful if key refers to immutable you will got an exception.|
+flush(bool $force): static | Removes all regular key-value pairs. If you pass the true for $force all immutable pairs will removed as well.|
+getImmutableKeys(): array | Returns one-dimension array of keys of immutable pairs stored in Registry.|
+stopPersist(): static | After calling this function all changes will be holding just in memory and will be lost when script was terminated.|
+
 ## Overview
 
 The goal of this project is implement this interface:
@@ -107,4 +144,4 @@ The case I put locking to another instance:
 `---------------------------------'
 ```
 
-Just now I put locking to the backlog for a while.
+Just now I put locking to the backlog for a while.   
