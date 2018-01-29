@@ -2,11 +2,12 @@ language: php
 php:
   - 7.1
 before_install:
+  - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
   - travis_retry composer self-update
   - composer create-project laravel/laravel
   - cd ./laravel
   - composer config repositories.shov vcs https://github.com/shov/laravel-registry.git
-  - composer require shov/laravel-registry dev-0-add-laravel-environment-test
+  - composer require shov/laravel-registry "dev-$BRUNCH"
   - composer update
   - cp ./vendor/shov/laravel-registry/tests/config/.env ./
   - rm ./config/app.php
