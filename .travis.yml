@@ -6,7 +6,7 @@ before_install:
   - composer create-project laravel/laravel
   - cd ./laravel
   - composer config repositories.shov vcs https://github.com/shov/laravel-registry.git
-  - composer require shov/laravel-registry dev-master
+  - composer require shov/laravel-registry dev-0-add-laravel-environment-test
   - composer update
   - cp ./vendor/shov/laravel-registry/tests/config/.env ./
   - rm ./config/app.php
