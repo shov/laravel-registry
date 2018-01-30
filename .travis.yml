@@ -9,7 +9,7 @@ addons:
       - mysql-server
       - mysql-client
 before_install:
-  - sudo mysql -e "use mysql; update user set authentication_string=PASSWORD('new_password') where User='root'; update user set plugin='mysql_native_password';FLUSH PRIVILEGES;"
+  - sudo mysql -e "use mysql; update user set authentication_string=PASSWORD('qWerty123') where User='root'; update user set plugin='mysql_native_password';FLUSH PRIVILEGES;"
   - sudo service mysql restart
   - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
   - travis_retry composer self-update
