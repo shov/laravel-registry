@@ -6,7 +6,7 @@ before_install:
   - travis_retry composer self-update
   - composer create-project laravel/laravel
   - cd ./laravel
-  - composer config repositories.shov vcs https://github.com/shov/laravel-registry.git
+  - composer config repositories.shov vcs ../.git
   - composer require shov/laravel-registry dev-$BRANCH
   - composer update
   - cp ./vendor/shov/laravel-registry/tests/config/.env ./
@@ -17,7 +17,7 @@ before_install:
   - php artisan migrate
   - cd ./vendor/shov/laravel-registry
 script:
-    - vendor/bin/phpunit --coverage-clover=coverage.xml
+    - phpunit --coverage-clover=coverage.xml
 
 after_success:
     - bash <(curl -s https://codecov.io/bash)
