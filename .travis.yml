@@ -14,7 +14,7 @@ before_install:
   - cp ./vendor/shov/laravel-registry/tests/config/app.php ./config
   - php artisan vendor:publish --all
   - mysql -e "create database IF NOT EXISTS test;" -uroot
-  - php artisan migrate
+  - php artisan migrate --force
   - cd ./vendor/shov/laravel-registry
 script:
     - phpunit --coverage-clover=coverage.xml
