@@ -16,7 +16,7 @@ before_install:
   - php artisan vendor:publish --all
   - mysql -e "create database IF NOT EXISTS test;" -uroot
   - php artisan migrate --force
-  - php artisan key:generate
+  - php artisan key:generate --force
   - cd ./vendor/shov/laravel-registry
 script:
     - phpunit --coverage-clover=coverage.xml
