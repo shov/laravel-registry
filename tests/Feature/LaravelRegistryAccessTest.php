@@ -3,8 +3,10 @@
 use Illuminate\Support\Facades\App;
 use PHPUnit\Framework\TestCase;
 
+
 class LaravelRegistryAccessTest extends TestCase
 {
+    use CreatesApplication;
     /**
      * @test
      * @dataProvider behaviourDataProvider
