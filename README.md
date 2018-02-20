@@ -1,4 +1,4 @@
-<p align="center"><img src="https://comet.by/img/laravel-registry.svg"></p>
+<p align="center"><img src="https://comet.by/img/laravel-registry.svg?22"></p>
 
 <p align="center">
 <a href="https://travis-ci.org/shov/laravel-registry"><img src="https://travis-ci.org/shov/laravel-registry.svg?branch=master"></a>
