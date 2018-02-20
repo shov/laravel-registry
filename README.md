@@ -4,8 +4,6 @@
 [![Codecov](https://img.shields.io/codecov/c/github/shov/laravel-registry.svg)]()
 [![license](https://img.shields.io/github/license/shov/laravel-registry.svg)]()
 
-##Overview
-
 ## Installation
 
 Run in root of project `composer require shov/laravel-registry`
