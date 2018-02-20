@@ -1,12 +1,25 @@
 language: php
 php:
   - 7.1
-before_script:
-    - travis_retry composer self-update
-    - travis_retry composer install --no-interaction --prefer-source
-
+before_install:
+  - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
+  - travis_retry composer self-update
+  - composer create-project laravel/laravel
+  - cd ./laravel
+  - composer config repositories.shov vcs ../.git
+  - composer require shov/laravel-registry dev-$BRANCH
+  - composer update
+  - cp ./vendor/shov/laravel-registry/tests/config/.env ./
+  - rm ./config/app.php
+  - cp ./vendor/shov/laravel-registry/tests/config/app.php ./config
+  - cp ./vendor/shov/laravel-registry/tests/config/AppServiceProvider.php ./app/Providers
+  - php artisan vendor:publish --all
+  - mysql -e "create database IF NOT EXISTS test;" -uroot
+  - php artisan migrate --force
+  - php artisan key:generate --force
+  - cd ./vendor/shov/laravel-registry
 script:
-    - vendor/bin/phpunit --coverage-clover=coverage.xml
+  - phpunit --coverage-clover=coverage.xml
 
 after_success:
-    - bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash)

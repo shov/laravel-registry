@@ -6,9 +6,6 @@ use Shov\Registry\Contracts\SaverInterface;
 use Shov\Registry\Exceptions\LockedException;
 use Shov\Registry\Registry;
 
-/**
- * @covers Registry
- */
 class RegistryTest extends TestCase
 {
     /**
