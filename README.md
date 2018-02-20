@@ -1,8 +1,11 @@
-# Laravel Registry
+<p align="center"><img src="https://comet.by/img/laravel-registry.svg"></p>
 
-[![Build Status](https://travis-ci.org/shov/laravel-registry.svg?branch=master)](https://travis-ci.org/shov/laravel-registry)
-[![Codecov](https://img.shields.io/codecov/c/github/shov/laravel-registry.svg)]()
-[![license](https://img.shields.io/github/license/shov/laravel-registry.svg)]()
+<p align="center">
+<a href="https://travis-ci.org/shov/laravel-registry"><img src="https://travis-ci.org/shov/laravel-registry.svg?branch=master"></a>
+<img src="https://img.shields.io/codecov/c/github/shov/laravel-registry.svg">
+<img src="https://img.shields.io/packagist/dt/shov/laravel-registry.svg">
+<img src="https://img.shields.io/github/license/shov/laravel-registry.svg">
+</p>
 
 ## Installation
 
