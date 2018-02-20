@@ -1,12 +1,10 @@
 <?php declare(strict_types=1);
 
 use Illuminate\Support\Facades\App;
-use PHPUnit\Framework\TestCase;
-use Tests\CreatesApplication;
+use Tests\TestCase;
 
 class LaravelRegistryAccessTest extends TestCase
 {
-    use CreatesApplication;
     /**
      * @test
      * @dataProvider behaviourDataProvider
