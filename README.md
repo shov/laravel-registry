@@ -4,8 +4,30 @@
 [![Codecov](https://img.shields.io/codecov/c/github/shov/laravel-registry.svg)]()
 [![license](https://img.shields.io/github/license/shov/laravel-registry.svg)]()
 
+##Overview
+
+## Installation
+
+Run in root of project `composer require shov/laravel-registry`
+
+Register service provider in your `config/app.php`
+```php
+    providers' => [
+        ...
+        
+        /*
+         * Package Service Providers...
+         */
+        Shov\Registry\RegistryServiceProvider::class,
+        
+        ...
+    ]
+    
+```
+
 ## Usage
 
+You allow to use DI or Facade to get registry instance
 ```php
 $this->registry
     ->set('foo', 'x')
