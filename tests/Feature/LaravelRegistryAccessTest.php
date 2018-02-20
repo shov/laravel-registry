@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\App;
 use PHPUnit\Framework\TestCase;
-
+use Tests\CreatesApplication;
 
 class LaravelRegistryAccessTest extends TestCase
 {
