@@ -1,6 +1,6 @@
 language: php
 php:
-  - 7.1
+  - 7.0
 before_install:
   - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
   - travis_retry composer self-update
