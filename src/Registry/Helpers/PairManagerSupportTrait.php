@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 namespace Shov\Registry\Helpers;
+
 use Shov\Registry\Contracts\LoaderInterface;
 use Shov\Registry\Contracts\SaverInterface;
 use Shov\Registry\Exceptions\LockedException;
@@ -22,7 +23,7 @@ trait PairManagerSupportTrait
      */
     protected function breakIfEmpty(string $key)
     {
-        if(empty($key)) {
+        if (empty($key)) {
             throw new \InvalidArgumentException("Empty key is invalid key!");
         }
     }
@@ -48,10 +49,32 @@ trait PairManagerSupportTrait
     }
 
     /**
+     * Save given pair if it's possible
+     * @param string $key
+     */
+    protected function savePartial(string $key)
+    {
+        $this->saver->save($this->pairs, $key);
+    }
+
+    /**
      * Load the state
      */
     protected function loadState()
     {
-        $this->pairs = $this->loader->load();
+        $this->pairs = $this
+            ->loader
+            ->load($this->pairs);
+    }
+
+    /**
+     * Load given pair if it's possible
+     * @param string $key
+     */
+    protected function loadPartial(string $key)
+    {
+        $this->pairs = $this
+            ->loader
+            ->load($this->pairs, $key);
     }
 }
