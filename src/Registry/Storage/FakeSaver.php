@@ -14,7 +14,7 @@ class FakeSaver implements SaverInterface
      * Save nothing
      * {@inheritdoc}
      */
-    public function save(array $pairs)
+    public function save(array $pairs, $key = null)
     {
         ;
     }
