@@ -17,7 +17,7 @@ class MemoryStorage implements SaverInterface, LoaderInterface
      * Load internal stored
      * {@inheritdoc}
      */
-    public function load(): array
+    public function load(array $pairs, $key = null): array
     {
         return $this->internalStorage;
     }
@@ -26,7 +26,7 @@ class MemoryStorage implements SaverInterface, LoaderInterface
      * Save in internal storage
      * {@inheritdoc}
      */
-    public function save(array $pairs)
+    public function save(array $pairs, $key = null)
     {
         $this->internalStorage = $pairs;
     }

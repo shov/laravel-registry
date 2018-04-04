@@ -15,7 +15,7 @@ class FileStorage implements SaverInterface, LoaderInterface
     /**
      * {@inheritdoc}
      */
-    public function load(): array
+    public function load(array $pairs, $key = null): array
     {
         $this->checkFile();
         $content = Storage::get($this->fileName());
@@ -26,7 +26,7 @@ class FileStorage implements SaverInterface, LoaderInterface
     /**
      * {@inheritdoc}
      */
-    public function save(array $pairs)
+    public function save(array $pairs, $key = null)
     {
         $content = json_encode($pairs);
         Storage::put($this->fileName(), $content);

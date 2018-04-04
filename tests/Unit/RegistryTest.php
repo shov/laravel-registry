@@ -416,12 +416,12 @@ class RegistryTest extends TestCase
         {
             public $pairs = [];
 
-            public function save(array $pairs)
+            public function save(array $pairs, $key = null)
             {
                 $this->pairs = $pairs;
             }
 
-            public function load(): array
+            public function load(array $pairs, $key = null): array
             {
                 return $this->pairs;
             }

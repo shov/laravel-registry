@@ -47,7 +47,7 @@ class Registry implements RegistryInterface
     public function has(string $key): bool
     {
         $this->breakIfEmpty($key);
-        $this->loadState();
+        $this->loadPartial($key);
         return isset($this->immutablePairs[$key]) || isset($this->pairs[$key]);
     }
 
@@ -60,7 +60,7 @@ class Registry implements RegistryInterface
             return $this->immutablePairs[$key];
         }
 
-        $this->loadState();
+        $this->loadPartial($key);
         if (isset($this->pairs[$key])) {
             return $this->pairs[$key];
         }
@@ -92,7 +92,7 @@ class Registry implements RegistryInterface
         $this->breakIfLocked($key);
 
         $this->pairs[$key] = $value;
-        $this->saveState();
+        $this->savePartial($key);
 
         return $this;
     }
@@ -139,7 +139,7 @@ class Registry implements RegistryInterface
         $this->breakIfLocked($key);
 
         unset($this->pairs[$key]);
-        $this->saveState();
+        $this->savePartial($key);
 
         return $this;
     }
@@ -151,7 +151,7 @@ class Registry implements RegistryInterface
     {
         $this->pairs = [];
 
-        if($force) {
+        if ($force) {
             $this->immutablePairs = [];
         }
 
